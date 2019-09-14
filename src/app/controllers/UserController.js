@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   async index(req, res) {
@@ -71,7 +72,6 @@ class UserController {
 
     const { email, oldPassword } = req.body;
     const user = await User.findByPk(req.userId);
-    // console.log(req.userState);
 
     if (email !== user.email) {
       const userExists = await User.findOne({ where: { email } });
@@ -84,31 +84,44 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    const { id, name, state } = await user.update(req.body);
+    await user.update(req.body);
+    const { id, name, state, avatar } = await User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json({
       id,
       name,
       email,
       state,
+      avatar,
     });
   }
 
   async show(req, res) {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findOne({
+      where: { id: req.params.id },
+      attributes: ['id', 'name', 'email', 'state', 'avatar_id'],
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['name', 'path', 'url'],
+        },
+      ],
+    });
 
     if (!user) {
-      return res.status(400).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    const { id, name, email, state } = user;
-
-    return res.json({
-      id,
-      name,
-      email,
-      state,
-    });
+    return res.json(user);
   }
 
   async delete(req, res) {
@@ -129,7 +142,7 @@ class UserController {
         if (deletedRecord === 1) {
           return res.status(200).json({ message: 'User deleted successfully' });
         }
-        return res.status(404).json({ message: 'record not found' });
+        return res.status(404).json({ message: 'User not found' });
       })
       .catch(err => {
         return res.status(500).json(err);
