@@ -12,7 +12,7 @@ import authMiddleware from './app/middlewares/auth';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-routes.get('/panels', PanelController.index);
+routes.post('/panels', PanelController.store);
 routes.post('/users', UserController.store);
 routes.post('/sessions', SessionController.store);
 
@@ -24,5 +24,7 @@ routes.get('/users/:id', UserController.show);
 routes.delete('/users/:id', UserController.delete);
 
 routes.post('/files', upload.single('file'), FileController.store);
+
+routes.get('/panels', PanelController.index);
 
 export default routes;

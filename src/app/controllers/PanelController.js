@@ -2,11 +2,13 @@ import fs from 'fs';
 import { resolve } from 'path';
 
 import Panel from '../models/Panel';
+import User from '../models/User';
 
 class PanelController {
-  async index(req, res) {
+  async store(req, res) {
     const file = resolve(__dirname, '..', '..', '..', 'solar_data.json');
-    fs.readFile(file, 'utf8', (err, jsonString) => {
+    // eslint-disable-next-line consistent-return
+    fs.readFile(file, 'utf8', async (err, jsonString) => {
       if (err) {
         console.log('File read failed:', err);
         return res.status(500).json(err);
@@ -25,10 +27,10 @@ class PanelController {
         dataPanel.push(dados);
       });
 
-      Panel.bulkCreate(dataPanel, { validate: true })
+      await Panel.bulkCreate(dataPanel, { validate: true })
         .then(() => {
           console.log('created');
-          return res.json({ ok: true });
+          return res.status(200).json({ msg: 'Data created succefully!' });
         })
         .catch(e => {
           console.log('failed');
@@ -36,13 +38,35 @@ class PanelController {
           return res.status(500).json({ error: e });
         });
     });
+  }
 
-    // try {
-    //   const teste = await Panel.bulkCreate(dataPanel);
-    //   return res.json(teste);
-    // } catch (e) {
+  async index(req, res) {
+    try {
+      const { state } = await User.findOne({
+        where: { id: req.userId },
+      });
 
-    // }
+      const { page = 1 } = req.query;
+
+      const panels = await Panel.findAll({
+        where: { state },
+        order: ['id'],
+        attributes: [
+          'data_provider',
+          'installation_date',
+          'system_size',
+          'zip_code',
+          'state',
+          'cost',
+        ],
+        limit: 30,
+        offset: (page - 1) * 30,
+      });
+
+      return res.status(200).json(panels);
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
   }
 }
 export default new PanelController();
