@@ -26,5 +26,6 @@ routes.delete('/users/:id', UserController.delete);
 routes.post('/files', upload.single('file'), FileController.store);
 
 routes.get('/panels', PanelController.index);
+routes.get('/panels/:state', PanelController.show);
 
 export default routes;

@@ -68,5 +68,36 @@ class PanelController {
       return res.status(500).json({ error: e });
     }
   }
+
+  async show(req, res) {
+    try {
+      const stateParam = req.params.state;
+
+      const { state } = await User.findOne({
+        where: { id: req.userId },
+      });
+
+      if (stateParam !== state) {
+        res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      const panels = await Panel.findAll({
+        where: { state: stateParam },
+        order: ['id'],
+        attributes: [
+          'data_provider',
+          'installation_date',
+          'system_size',
+          'zip_code',
+          'state',
+          'cost',
+        ],
+      });
+
+      return res.status(200).json(panels);
+    } catch (e) {
+      return res.status(500).json({ error: e });
+    }
+  }
 }
 export default new PanelController();
