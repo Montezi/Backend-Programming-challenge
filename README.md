@@ -38,6 +38,7 @@ Panels
 *Para acessar as rotas abaixo é necessário passar o token de autenticação
 [GET]  <host>/panels/
 [GET]  <host>/panels/:state
+
 Panels/search (*Para carregar os widgets e gráfico do Dashboard)
 [GET]  <host>/panels/search/totalInstallation
 [GET]  <host>/panels/search/maxInstallation
@@ -93,7 +94,8 @@ Files
 ```
   Todos os comandos abaixo devem ser excutados na raiz do Projeto 
   Para instalar as dependências:
-  npm install   
+  npm install 
+  
   Rodar as Migrations para criar a base de dados 
   npx sequelize db:migrate
   
