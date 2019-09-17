@@ -13,6 +13,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
+  plugins: ['import', 'prettier'],
   rules: {
     'no-console': 'off',
     'prettier/prettier': 'error',
