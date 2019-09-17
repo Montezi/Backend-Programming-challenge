@@ -6,6 +6,10 @@ import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
 import PanelController from './app/controllers/PanelController';
+import SearchTotalInstallationController from './app/controllers/SearchTotalInstallationController';
+import SearchMaxInstallationController from './app/controllers/SearchMaxInstallationController';
+import MaxNumberInstallationController from './app/controllers/MaxNumberInstallationController';
+import GraphController from './app/controllers/GraphController';
 
 import authMiddleware from './app/middlewares/auth';
 
@@ -27,5 +31,21 @@ routes.post('/files', upload.single('file'), FileController.store);
 
 routes.get('/panels', PanelController.index);
 routes.get('/panels/:state', PanelController.show);
+
+routes.get(
+  '/panels/search/totalInstallation',
+  SearchTotalInstallationController.show
+);
+routes.get(
+  '/panels/search/maxInstallation',
+  SearchMaxInstallationController.show
+);
+
+routes.get(
+  '/panels/search/maxNumberInstallation',
+  MaxNumberInstallationController.show
+);
+
+routes.get('/panels/search/graph', GraphController.show);
 
 export default routes;
